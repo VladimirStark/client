@@ -8,55 +8,82 @@ import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import CommentIcon from '@mui/icons-material/Comment';
 import { Container } from '@mui/material';
+import EditTask from './EditTask';
+import { useState } from 'react';
 
-export default function TasksList() {
-    const [checked, setChecked] = React.useState([0]);
-
-    const handleToggle = (value) => () => {
-        const currentIndex = checked.indexOf(value);
-        const newChecked = [...checked];
-
-        if (currentIndex === -1) {
-            newChecked.push(value);
-        } else {
-            newChecked.splice(currentIndex, 1);
-        }
-
-        setChecked(newChecked);
-    };
-
+/** 
+ * JSDoc comment
+ * @param {TasksListProps} props 
+ */
+export default function TasksList(props) {
+    const [editOpen, setEditOpen] = useState(false)
+    const [editTaskId, setEditTaskId] = useState(-1)
+    /** 
+ * @param {Task} task 
+ */
+    
+    function handleToggle(task) {
+        const taskId = task.id
+        props.setTasks((tasks) => { // callback
+            // Immutable logic
+            return tasks.map((task) => {
+                return (task.id === taskId) 
+                    ? ({...task, done: !task.done})
+                    : task
+            })
+        })
+    }
     return (
         <Container maxWidth='sm'>
             <List sx={{ width: '100%', bgcolor: 'background.paper' }}>
-                {[0, 1, 2, 3].map((value) => {
-                    const labelId = `checkbox-list-label-${value}`;
+                {props.tasks.map((task) => {
+                    const labelId = `checkbox-list-label-${task.title}`;
 
                     return (
                         <ListItem
-                            key={value}
+                            key={task.id}
                             secondaryAction={
-                                <IconButton edge="end" aria-label="comments">
+                                <IconButton 
+                                    edge="end" 
+                                    aria-label="comments"
+                                    onClick={() => {
+                                        setEditTaskId(task.id)
+                                        setEditOpen(true)
+                                    }}>
                                     <CommentIcon />
                                 </IconButton>
                             }
                             disablePadding
                         >
-                            <ListItemButton role={undefined} onClick={handleToggle(value)} dense>
+                            <ListItemButton 
+                            role={undefined} 
+                            onClick={() => handleToggle(task)} 
+                            dense>
                                 <ListItemIcon>
                                     <Checkbox
                                         edge="start"
-                                        checked={checked.indexOf(value) !== -1}
+                                        checked={task.done}
                                         tabIndex={-1}
                                         disableRipple
                                         inputProps={{ 'aria-labelledby': labelId }}
                                     />
                                 </ListItemIcon>
-                                <ListItemText id={labelId} primary={`Line item ${value + 1}`} />
+                                <ListItemText 
+                                id={labelId} 
+                                primary={task.title} />
                             </ListItemButton>
                         </ListItem>
                     );
                 })}
             </List>
+            <EditTask 
+                open={editOpen}
+                setOpen={setEditOpen}
+                task ={props.tasks.find((task) => {
+                    return task.id === editTaskId
+                })}
+                setTasks={props.setTasks}
+            />
         </Container>
     );
 }

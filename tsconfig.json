@@ -5,6 +5,8 @@
         "checkJs": true,
         "strict": true,
         "jsx": "react",
-        "esModuleInterop": true
+        "esModuleInterop": true,
+        "target":"ES2017",
+        "moduleResolution": "Bundler"
     }
 }

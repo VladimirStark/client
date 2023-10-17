@@ -30,7 +30,7 @@ export default function Todolist() {
           Personal task manager
       </Typography>
       <Divider></Divider> 
-      <TasksList></TasksList>     
+      <TasksList tasks={tasks} setTasks={setTasks} ></TasksList>     
     </Container>
   )
 }
