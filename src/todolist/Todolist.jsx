@@ -1,6 +1,7 @@
 import { Container, Divider, Typography } from '@mui/material'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import TasksList from './TasksList'
+import AddTask from './AddTask'
 
 const initialTasks = [
     {
@@ -16,7 +17,13 @@ const initialTasks = [
   ]
 
 export default function Todolist() {
-    const [tasks, setTasks] = useState(initialTasks)
+  const tasksStore = localStorage.getItem('tasks')
+  ? JSON.parse(localStorage.getItem('tasks') || 'null')
+  : null
+    const [tasks, setTasks] = useState(tasksStore || initialTasks) // React hook
+    useEffect(() => {
+        localStorage.setItem('tasks', JSON.stringify(tasks))
+    }, [tasks])
   return (
     <Container maxWidth='xl'>
       <Typography 
@@ -30,6 +37,8 @@ export default function Todolist() {
           Personal task manager
       </Typography>
       <Divider></Divider> 
+      <AddTask setTasks={setTasks}/>
+      <Divider></Divider>
       <TasksList tasks={tasks} setTasks={setTasks} ></TasksList>     
     </Container>
   )

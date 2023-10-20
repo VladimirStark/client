@@ -15,3 +15,7 @@ type EditTaskProps = {
     task: Task |  undefined
     setTasks: React.Dispatch<React.SetStateAction<Task[]>>
 }
+
+type AddTaskProps = {
+    setTasks: React.Dispatch<React.SetStateAction<Task[]>>
+}

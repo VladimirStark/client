@@ -11,11 +11,12 @@ const style = {
     border: '2px solid #000',
     boxShadow: 24,
     p: 4,
-  };
+};
 /**
  * @param {EditTaskProps} props 
  */
 export default function EditTask(props) {
+    const task = props.task
     return (
         <>
             <Modal
@@ -29,13 +30,38 @@ export default function EditTask(props) {
                         Edit task
                     </Typography>
                     <Typography id="modal-modal-description" sx={{ mt: 2 }}>
-                        
                     </Typography>
                     <Divider />
-                    <form>
-                        <TextField />
-                        <Button>Edit</Button>
-                    </form>
+                    <Box component={'form'}
+                        onSubmit={(event) => {
+                            event.preventDefault()
+                            const form = event.target 
+                            const formData = new FormData(form)
+                            const title = formData.get('title')
+                            if (typeof title !== 'string') return;
+                            props.setTasks((prevState) => {
+                                //prevState = tasks
+                                // Immutable
+                                return prevState.map((task) => {
+                                    if (task.id === props.task?.id) {
+                                        return {...task, title}                                        
+                                    } else {
+                                        return task
+                                    }
+                                })
+                            })
+                            props.setOpen(false)
+                        }}
+                        sx={{
+                            mt: 2,
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'stretch ', // center 
+                            gap: 2 // 2 * 8px  // 1 rem/2 = 8px
+                        }}>
+                        <TextField defaultValue={task?.title} name='title' /> {/*HTMLInputElement */}
+                        <Button variant='contained' type='submit'>Edit</Button>
+                    </Box>
                 </Box>
             </Modal>
 
