@@ -6,7 +6,8 @@ import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
-import CommentIcon from '@mui/icons-material/Comment';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { Container } from '@mui/material';
 import EditTask from './EditTask';
 import { useState } from 'react';
@@ -21,14 +22,14 @@ export default function TasksList(props) {
     /** 
  * @param {Task} task 
  */
-    
+
     function handleToggle(task) {
         const taskId = task.id
         props.setTasks((tasks) => { // callback
             // Immutable logic
             return tasks.map((task) => {
-                return (task.id === taskId) 
-                    ? ({...task, done: !task.done})
+                return (task.id === taskId)
+                    ? ({ ...task, done: !task.done })
                     : task
             })
         })
@@ -43,22 +44,48 @@ export default function TasksList(props) {
                         <ListItem
                             key={task.id}
                             secondaryAction={
-                                <IconButton 
-                                    edge="end" 
-                                    aria-label="comments"
-                                    onClick={() => {
-                                        setEditTaskId(task.id)
-                                        setEditOpen(true)
-                                    }}>
-                                    <CommentIcon />
-                                </IconButton>
+                                <>
+                                    <IconButton
+                                        edge="end"
+                                        aria-label="comments"
+                                        sx={{
+                                            mr: 0
+                                        }}
+                                        onClick={() => {
+                                            setEditTaskId(task.id)
+                                            setEditOpen(true)
+                                        }}>
+                                        <EditIcon />
+                                    </IconButton>
+
+                                    <IconButton
+                                        edge="end"
+                                        aria-label="comments"
+                                        onClick={() => {
+                                            if (confirm('Are you sure?'))
+                                           props.setTasks((prevState) =>{
+                                            const taskId = task.id
+                                            return prevState.filter((task) => {
+                                                return taskId !== task.id
+                                            })
+                                           })
+                                        }}>
+                                        <DeleteIcon />
+                                    </IconButton>
+
+                                </>
                             }
                             disablePadding
                         >
-                            <ListItemButton 
-                            role={undefined} 
-                            onClick={() => handleToggle(task)} 
-                            dense>
+                            <ListItemButton
+                                role={undefined}
+                                onClick={() => handleToggle(task)}
+                                sx={{
+                                  '&.MuiListItemButton-root': {
+                                        paddingRight: 10
+                                    },
+                                }}
+                                dense>
                                 <ListItemIcon>
                                     <Checkbox
                                         edge="start"
@@ -68,18 +95,18 @@ export default function TasksList(props) {
                                         inputProps={{ 'aria-labelledby': labelId }}
                                     />
                                 </ListItemIcon>
-                                <ListItemText 
-                                id={labelId} 
-                                primary={task.title} />
+                                <ListItemText
+                                    id={labelId}
+                                    primary={task.title} />
                             </ListItemButton>
                         </ListItem>
                     );
                 })}
             </List>
-            <EditTask 
+            <EditTask
                 open={editOpen}
                 setOpen={setEditOpen}
-                task ={props.tasks.find((task) => {
+                task={props.tasks.find((task) => {
                     return task.id === editTaskId
                 })}
                 setTasks={props.setTasks}
